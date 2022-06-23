@@ -1,0 +1,212 @@
+﻿<Window x:Class="ExcelImportExport.MainWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:local="clr-namespace:ExcelImportExport"
+             mc:Ignorable="d" 
+             Title="Редактор свойств элементов" 
+             SizeToContent="WidthAndHeight"
+             ResizeMode="NoResize"
+             KeyDown="Window_KeyDown">
+
+    <Window.Resources>
+        <Style TargetType="ComboBox">
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="Width" Value="128" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+        </Style>
+        <Style TargetType="TextBlock">
+            <Setter Property="Margin" Value="5, 0, 0, 0" />
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="Width" Value="128" />
+            <Setter Property="Height" Value="22" />
+            <Setter Property="Margin" Value="5" />
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="Width" Value="80" />
+            <Setter Property="Height" Value="22" />
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="IsEnabled" Value="{Binding RelativeSource={RelativeSource AncestorType=Window}, 
+                                                                                        Path=DataContext.IsEnabled}" />
+        </Style>
+        <Style TargetType="RadioButton">
+            <Setter Property="Margin" Value="5" />
+        </Style>
+    </Window.Resources>
+
+    <StackPanel>
+        <DockPanel>
+            <GroupBox Header="Выборка"
+                      Margin="5, 0, 0, 0">
+                <StackPanel>
+
+                    <TextBlock Text="Категория" />
+
+                    <ComboBox ItemsSource="{Binding CategoryList}"
+                              SelectedItem="{Binding SelectedCategory, Mode=TwoWay}"
+                              DisplayMemberPath="Name">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="SelectionChanged">
+                                <i:InvokeCommandAction Command="{Binding cmbCategoryChanged}" />
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </ComboBox>
+
+                    <StackPanel Orientation="Horizontal">
+
+                        <RadioButton Content="Тип">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Checked">
+                                    <i:InvokeCommandAction Command="{Binding rdbType}" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </RadioButton>
+
+                        <RadioButton Content="Экземпляр"
+                                     IsChecked="True">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Checked">
+                                    <i:InvokeCommandAction Command="{Binding rdbInstance}" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </RadioButton>
+
+                    </StackPanel>
+
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Фильтр">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+
+                        <TextBlock Text="Параметр" />
+
+                        <ComboBox ItemsSource="{Binding PropertiesList}"
+                                  SelectedItem="{Binding SelectedPropertyForFilter, Mode=TwoWay}"
+                                  IsEnabled="{Binding RelativeSource={RelativeSource AncestorType=Window}, 
+                                                                                        Path=DataContext.IsEnabled}">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="SelectionChanged">
+                                    <i:InvokeCommandAction Command="{Binding cmbPropertyForFilterChanged}" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </ComboBox>
+
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+
+                        <TextBlock Text="Тип сравнения" />
+
+                        <ComboBox ItemsSource="{Binding OperatorsList}"
+                                  SelectedItem="{Binding SelectedOperatorForFilter, Mode=TwoWay}"
+                                  IsSynchronizedWithCurrentItem="True"
+                                  IsEnabled="{Binding RelativeSource={RelativeSource AncestorType=Window}, 
+                                                                                        Path=DataContext.FilterIsEnabled}" />
+
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+
+                        <TextBlock Text="Значение" />
+
+                        <ComboBox ItemsSource="{Binding ValuesForFilterList}"
+                                  IsEnabled="{Binding RelativeSource={RelativeSource AncestorType=Window}, 
+                                                                                        Path=DataContext.FilterIsEnabled}"
+                                  IsEditable="True"
+                                  Text="{Binding SelectedValueForFilter, Mode=TwoWay}"
+                                  IsTextSearchEnabled="True" />
+
+                    </StackPanel>
+
+                    <GridSplitter Grid.Column="3"
+                                  Width="1"
+                                  Background="Gray"
+                                  IsEnabled="False"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Stretch" />
+
+                    <StackPanel Grid.Column="4">
+                        <Button Content="Добавить"
+                                Command="{Binding btnFilter}" 
+                                IsEnabled="{Binding RelativeSource={RelativeSource AncestorType=Window}, 
+                                                                                        Path=DataContext.FilterIsEnabled}"/>
+
+                        <Button Content="Сбросить"
+                                Command="{Binding btnDiscard}" 
+                                IsEnabled="{Binding RelativeSource={RelativeSource AncestorType=Window}, 
+                                                                                        Path=DataContext.FilterIsEnabled}"/>
+
+                    </StackPanel>
+                </Grid>
+            </GroupBox>
+            <GroupBox Header="Excel"
+                      Width="105">
+                <StackPanel>
+
+                    <Button Content="Экспорт"
+                            Command="{Binding btnExport}" />
+
+                    <Button Content="Импорт"
+                            Command="{Binding btnImport}" />
+
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Рабочий набор">
+                <StackPanel>
+
+                    <ComboBox ItemsSource="{Binding WorksetsList}"
+                              SelectedItem="{Binding SelectedWorkset, Mode=TwoWay}"
+                              DisplayMemberPath="Name"
+                              IsEnabled="{Binding RelativeSource={RelativeSource AncestorType=Window}, 
+                                                                                        Path=DataContext.IsEnabled}" />
+                    
+                    <Button Content="Применить"
+                            Command="{Binding btnApplyWorkset}" 
+                            HorizontalAlignment="Left"/>
+
+                </StackPanel>
+            </GroupBox>
+            <DockPanel LastChildFill="False">
+                
+                <Button DockPanel.Dock="Top"
+                        Margin="5, 22, 5, 5"
+                        Content="Применить" 
+                        Command="{Binding btnApply}" />
+
+                <TextBlock DockPanel.Dock="Bottom"
+                           HorizontalAlignment="Center"
+                           Margin="5, 5, 5, 23">
+                    <Hyperlink NavigateUri="https://www.notion.so/f013c461b1b349bbb619e443040269bb" 
+                               RequestNavigate="Hyperlink_RequestNavigate">
+                               Справка
+                    </Hyperlink>
+                </TextBlock>
+
+            </DockPanel>
+
+
+        </DockPanel>
+
+        <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                      VerticalScrollBarVisibility="Auto">
+
+            <DataGrid x:Name="dgElementInformation" 
+                      Width="1010"
+                      Height="300"
+                      Margin="5"
+                      ItemsSource="{Binding ElementInformationList}"
+                      local:MainWindowViewModel.DataGrid="{Binding ElementName=dgElementInformation}">
+            </DataGrid>     
+            
+        </ScrollViewer>                
+    </StackPanel>
+</Window>
